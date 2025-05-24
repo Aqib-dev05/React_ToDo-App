@@ -3,29 +3,36 @@ import { v4 as uuidv4 } from "uuid";
 import "./todo.css";
 
 export default function Todo() {
-  //  empty array is initial state of todo(list).it is filled with value of input on submitting the form
-  // val is input value
-  let [todos, setTodo] = useState([]);
+  // Initialize todos from localStorage or empty array if nothing stored
+  let [todos, setTodo] = useState(() => {
+    const savedTodos = localStorage.getItem("todos");
+    return savedTodos ? JSON.parse(savedTodos) : [];
+  });
   let [val, setVal] = useState("");
 
+  // Save todos to localStorage whenever todos state changes
+  useState(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
 
-  // for submit todo to ul
   let addNewTodo = (e) => {
     e.preventDefault();
-    if (val.trim() != "") setTodo([...todos, { task: val, id: uuidv4() }]);
-    setVal(""); //set value to empty after submittion
+    if (val.trim() !== "") {
+      const newTodos = [...todos, { task: val, id: uuidv4() }];
+      setTodo(newTodos);
+      localStorage.setItem("todos", JSON.stringify(newTodos));
+    }
+    setVal("");
   };
 
-  //  for val state
   let updateVal = (e) => {
     setVal(e.target.value);
   };
 
-  //for deleting a list task
   let deleteTodo = (id) => {
-    console.log(id);
-    let copy = todos.filter((todo) => todo.id != id);
-    setTodo(copy);
+    const newTodos = todos.filter((todo) => todo.id !== id);
+    setTodo(newTodos);
+    localStorage.setItem("todos", JSON.stringify(newTodos));
   };
 
   return (
@@ -47,7 +54,6 @@ export default function Todo() {
           <ul className="ul">
             {todos.map((todo) => {
               return (
-                // individual items of i should have unique key.
                 <li className="list" key={todo.id}>
                   <p>{todo.task}</p>
                   <button
