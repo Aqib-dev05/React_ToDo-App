@@ -1,59 +1,74 @@
+import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import "./todo.css";
-import { useState, useEffect } from "react";
 
+export default function Todo() {
+  // Initialize todos from localStorage or empty array if nothing stored
+  let [todos, setTodo] = useState(() => {
+    const savedTodos = localStorage.getItem("todos");
+    return savedTodos ? JSON.parse(savedTodos) : [];
+  });
+  let [val, setVal] = useState("");
 
+  // Save todos to localStorage whenever todos state changes
+  useState(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
 
-  export default function Todo() {
-    // Initialize todos from localStorage using lazy initialization
-    const [todos, setTodos] = useState(() => {
-      return JSON.parse(localStorage.getItem("todos") || "[]");
-    });
-    const [val, setVal] = useState("");
+  let addNewTodo = (e) => {
+    e.preventDefault();
+    if (val.trim() !== "") {
+      const newTodos = [...todos, { task: val, id: uuidv4() }];
+      setTodo(newTodos);
+      localStorage.setItem("todos", JSON.stringify(newTodos));
+    }
+    setVal("");
+  };
 
-    // Use useEffect for localStorage updates
-    useEffect(() => {
-      localStorage.setItem("todos", JSON.stringify(todos));
-    }, [todos]);
+  let updateVal = (e) => {
+    setVal(e.target.value);
+  };
 
-    const addNewTodo = (e) => {
-      e.preventDefault();
-      const trimmedVal = val.trim();
-      if (trimmedVal) {
-        setTodos(prevTodos => [...prevTodos, { task: trimmedVal, id: uuidv4() }]);
-        setVal("");
-      }
-    };
+  let deleteTodo = (id) => {
+    const newTodos = todos.filter((todo) => todo.id !== id);
+    setTodo(newTodos);
+    localStorage.setItem("todos", JSON.stringify(newTodos));
+  };
 
-    const deleteTodo = (id) => {
-      setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
-    };
-
-    return (
+  return (
+    <>
       <div className="container">
         <div className="inner">
           <form className="top" onSubmit={addNewTodo}>
             <input
               type="text"
+              name=""
+              id=""
               placeholder="Enter Task Here...."
               value={val}
-              onChange={(e) => setVal(e.target.value)}
+              onChange={updateVal}
             />
-            <button type="submit">Add</button>
+            <button>Add</button>
           </form>
 
           <ul className="ul">
-            {todos.map(({ id, task }) => (
-              <li className="list" key={id}>
-                <p>{task}</p>
-                <button onClick={() => deleteTodo(id)}>
-                  <i className="ri-delete-bin-line"></i>
-                </button>
-              </li>
-            ))}
+            {todos.map((todo) => {
+              return (
+                <li className="list" key={todo.id}>
+                  <p>{todo.task}</p>
+                  <button
+                    onClick={() => {
+                      deleteTodo(todo.id);
+                    }}
+                  >
+                    <i className="ri-delete-bin-line"></i>
+                  </button>
+                </li>
+              );
+            })}
           </ul>
         </div>
       </div>
-    );
-  
+    </>
+  );
 }
