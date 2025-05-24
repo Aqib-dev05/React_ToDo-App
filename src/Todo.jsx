@@ -8,6 +8,7 @@ export default function Todo() {
   let [todos, setTodo] = useState([]);
   let [val, setVal] = useState("");
 
+
   // for submit todo to ul
   let addNewTodo = (e) => {
     e.preventDefault();
