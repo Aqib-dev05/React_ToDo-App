@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import "./todo.css";
 
@@ -11,7 +11,7 @@ export default function Todo() {
   let [val, setVal] = useState("");
 
   // Save todos to localStorage whenever todos state changes
-  useState(() => {
+  useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos]);
 
@@ -20,7 +20,8 @@ export default function Todo() {
     if (val.trim() !== "") {
       const newTodos = [...todos, { task: val, id: uuidv4() }];
       setTodo(newTodos);
-      localStorage.setItem("todos", JSON.stringify(newTodos));
+      // Remove this as it's handled by useEffect
+      // localStorage.setItem("todos", JSON.stringify(newTodos));
     }
     setVal("");
   };
@@ -32,7 +33,8 @@ export default function Todo() {
   let deleteTodo = (id) => {
     const newTodos = todos.filter((todo) => todo.id !== id);
     setTodo(newTodos);
-    localStorage.setItem("todos", JSON.stringify(newTodos));
+    // Remove this as it's handled by useEffect
+    // localStorage.setItem("todos", JSON.stringify(newTodos));
   };
 
   return (
