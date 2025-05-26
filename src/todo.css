@@ -37,6 +37,7 @@ html {
 }
 .top input {
   background-color: transparent;
+  color: black;
   border: 2px solid royalblue;
   outline: none;
   width: 420px;
